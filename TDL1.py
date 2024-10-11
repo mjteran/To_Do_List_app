@@ -87,16 +87,32 @@ def load_tasks(filename='tasks.txt'):                   # load the tasks file
     except FileNotFoundError:                           # error if file not found or not tasks
         print(f"File '{filename}' not found.\n")
 
-# main menu to start the TDL 1 app:
+# function to mark a task as completed
+def mark_task():
+    if not task_l:
+        print("The To-do List is empty.")
+        return
+    v = input("Enter the complete task:").strip()
+    if v in task_l:
+        c = task_l.index(f"{v}")
+        task_l[c] = f"{v} (completed)"
+        print(f"{v} has been marked complete.")
+    else:
+        print("The task is not in the list")
+        e = input("You want to try another task: 'Y' to retry, any else character to return to menu:")
+        if e in "Yy":
+            return mark_task()
+
 def main():
     while True:
         print("To - Do List Application:")
         print("1. Add Task")
         print("2. Remove Task")
         print("3. View Tasks")
-        print("4. Load Tasks list from a File")
-        print("5. Save Tasks to a File")
-        print("6. Exit")
+        print("4. Mark complete task")
+        print("5. Load Tasks list from a File")
+        print("6. Save Tasks to a File")
+        print("7. Exit")
         request = input("Enter your choice: ").strip()      # remove extra spaces in the task
         # validate options
         if request == "1":
@@ -110,10 +126,12 @@ def main():
         elif request == "3":
             view_task()
         elif request == "4":
-            load_tasks()
+            mark_task()
         elif request == "5":
-            save_tasks()
+            load_tasks()
         elif request == "6":
+            save_tasks()
+        elif request == "7":
             if changes_unsaved:
                 save_user = input("You have unsaved changes. Would you like to save before exiting? (Y/N): ").strip().lower()
                 if save_user == 'y':
