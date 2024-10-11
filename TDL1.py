@@ -90,17 +90,17 @@ def load_tasks(filename='tasks.txt'):                   # load the tasks file
 # function to mark a task as completed
 def mark_task():
     if not task_l:
-        print("The To-do List is empty.")
+        print("The To-do List is empty.\n")
         return
-    v = input("Enter the complete task:").strip()
-    if v in task_l:
-        c = task_l.index(f"{v}")
-        task_l[c] = f"{v} (completed)"
-        print(f"{v} has been marked complete.")
+    task_c = input("Enter the completed task: ").strip()
+    if task_c in task_l:
+        i = task_l.index(f"{task_c}")
+        task_l[i] = f"{task_c} (completed)"
+        print(f"'{task_c}' has been marked as completed.\n")
     else:
-        print("The task is not in the list")
-        e = input("You want to try another task: 'Y' to retry, any else character to return to menu:")
-        if e in "Yy":
+        print("The task is not in the list.")
+        retry = input("Would you like to try again? ('Y' to retry, any other character to return to the menu): ")
+        if retry.lower() == 'y':
             return mark_task()
 
 def main():

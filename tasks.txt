@@ -1,10 +1,4 @@
-
-
-
-
-
+correr (completed)
 ir
-
 caminar
-
-cantar
+pelis (completed)
