@@ -39,9 +39,20 @@ def remove_task():
         e = input("You want to try another task: 'Y' to retry, any else character to return to menu:")
         if e in "Yy":
             return remove_task()
-        else:
-            return main()
-
+def mark_task():
+    if not task_l:
+        print("The To-do List is empty.")
+        return main()
+    v = input("Enter the complete task:").strip()
+    if v in task_l:
+        c = task_l.index(f"{v}")
+        task_l[c] = f"{v} (completed)"
+        print(f"{v} has been marked complete.")
+    else:
+        print("The task is not in the list")
+        e = input("You want to try another task: 'Y' to retry, any else character to return to menu:")
+        if e in "Yy":
+            return mark_task()
 # create a menu to start the TDL 1 App:
 def main():
     while True:
@@ -49,7 +60,8 @@ def main():
         print("1. Add Task")
         print("2. Remove Task")
         print("3. View Tasks")
-        print("4. Exit")
+        print("4. Mark complete task")
+        print("5. Exit")
         request = input("Enter your choice: ")
         if request == "1":
             task = input("Enter the task to add: ")
@@ -61,6 +73,8 @@ def main():
             print("The existing tasks are the following: ")
             view_task()
         elif request == "4":
+            mark_task()
+        elif request == "5":
             print("Exiting the application. Goodbye!")
             break
         else:
