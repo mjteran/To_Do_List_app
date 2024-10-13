@@ -11,7 +11,11 @@
 # 4. Exit the application.
 
 # to-do list application coding:
+#Import the main libraries
+from datetime import datetime
 # global variables:
+
+
 task_l = []
 changes_unsaved = False
 # functions:
@@ -21,8 +25,25 @@ def add_task(task):
     if task in task_l:                                  # validate if task already exists
         print(f"'{task}' is already in the list. Duplicate tasks are not allowed.\n")
     else:
-        task_l.append(task)         # append task to the list
-        changes_unsaved = True                          # flag to indicate changes
+        allow = ["high", "medium", "low"]
+        while True: #Determine if the priority input is acceptable
+            p = input("Enter the priority (high,medium,low):").strip()
+            if p in allow:
+                break
+            else:
+                print("Not valid priority, please try again.")
+
+        f = "%Y-%m-%d"  #Date format
+        while True: #Determine if the priority is acceptable
+            day = input("Enter the deadline (YYYY-MM-DD):")
+            try:
+                datetime.strptime(day,f)
+                break
+            except ValueError:
+                print("Invalid date entered. Please try again.")
+        new_task = [task,p,day]
+        task_l.append(new_task)  #Append the new task as a list
+        changes_unsaved = True   # flag to indicate changes
         print(f"'{task}' has been added to list.\n")
 
 def view_task():
