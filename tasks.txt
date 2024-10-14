@@ -1,10 +1,18 @@
+[ir a la playa, low, 2024-10-12]
 
 
 
 
 
-ir
 
-caminar
 
-cantar
+
+
+
+
+[cantar, medium, 2025-01-01]
+
+
+
+[bailar, high, 2024-10-15]
+[comer, high, 2024-10-16]
