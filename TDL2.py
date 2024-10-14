@@ -13,47 +13,56 @@
 # to-do list application coding:
 #Import the main libraries
 from datetime import datetime
+import pandas as pd
+
 # global variables:
-
-
-task_l = []
+task_l = pd.DataFrame(columns=['Task','Priority', 'Date', 'Priority_Value'])
 changes_unsaved = False
+
+# priorities:
+p_value = {'high': 1, 'medium': 2, 'low': 3}
+
 # functions:
 # function to add tasks to the list:
 def add_task(task):
-    global changes_unsaved
-    if task in task_l:                                  # validate if task already exists
+    global changes_unsaved, p_value
+    if task in task_l['Task'].values:                           # validate if task already exists
         print(f"'{task}' is already in the list. Duplicate tasks are not allowed.\n")
-    else:
-        allow = ["high", "medium", "low"]
-        while True: #Determine if the priority input is acceptable
-            p = input("Enter the priority (high,medium,low):").strip()
-            if p in allow:
-                break
-            else:
-                print("Not valid priority, please try again.")
 
-        f = "%Y-%m-%d"  #Date format
-        while True: #Determine if the priority is acceptable
-            day = input("Enter the deadline (YYYY-MM-DD):")
-            try:
-                datetime.strptime(day,f)
-                break
-            except ValueError:
-                print("Invalid date entered. Please try again.")
-        new_task = [task,p,day]
-        task_l.append(new_task)  #Append the new task as a list
-        changes_unsaved = True   # flag to indicate changes
-        print(f"'{task}' has been added to list.\n")
+    allow = ["high", "medium", "low"]
+    while True:                                                 # determine if the priority is acceptable
+        p = input("Enter the priority (high,medium,low):").strip()
+        if p in allow:
+            break
+        else:
+            print("Not valid priority, please try again.")
+
+    f = "%Y-%m-%d"                                              # date format
+    while True:                                                 # determine if the date is acceptable
+        day = input("Enter the deadline (YYYY-MM-DD):")
+        try:
+            datetime.strptime(day,f)
+            break
+        except ValueError:
+            print("Invalid date entered. Please try again.")
+    # add new task as a row
+    new_task = [task,p,day,p_value[p]]
+    task_l.loc[len(task_l)] = new_task                          # append the new task as a row
+    changes_unsaved = True                                      # flag to indicate changes
+    print(f"'{task}' has been added to list.\n")
 
 def view_task():
-    if not task_l:                                      # if the list of tasks is empty
+    if task_l.empty:                                            # if the list of tasks is empty
         print("The To-do List is empty.\n")
         return
-    print("To-do List:")
-    for n, task in enumerate(task_l, start=1):          # enumerate tasks starting from 1
-        print(f"{n}. {task}")
-    print()
+
+    task_l['Date'] = pd.to_datetime(task_l['Date'])             # 'Date' to datetime for sorting
+    # first sort by Date
+    task_l.sort_values(by=['Date'], ascending=True, inplace=True)           # sort 'Date' in ascending order
+    # second sort by Priority
+    task_l['Priority_V'] = task_l['Priority'].map(p_value)      # create a column with priorities
+    task_sorted = task_l.sort_values(by=['Priority_V'])         # sort by Priority values
+    print(task_sorted)
 
 # function to remove a task:
 def remove_task():
@@ -95,10 +104,13 @@ def load_tasks(filename='tasks.txt'):                   # load the tasks file
     try:
         with open(filename, 'r') as file:               # read the tasks
             for line in file:
-                task = line.strip()
-                if task and task not in task_l:  # avoid duplicates
-                    task_l.append(task)                 # to avoid duplicates
-                    new_task += 1                       # count new tasks
+                task = line.strip().strip('[]').split(",") # split by comma
+                if len(task) == 3:                      # 3 columns
+                    task, priority, date = task
+                    if task and task not in task_l['Task'].values:  # avoid duplicates
+                        task_l.loc[len(task_l)] = [task.strip(), priority.strip(), date.strip(), p_value[priority.strip()]]  # append as list
+                        new_task += 1                   # count new tasks
+
         if new_task > 0:
             print(f"{new_task} Task(s) were loaded from {filename}.\n")
             return
@@ -119,9 +131,9 @@ def mark_task():
         print(f"{v} has been marked complete.")
     else:
         print("The task is not in the list")
-        e = input("You want to try another task: 'Y' to retry, any else character to return to menu:")
-        if e in "Yy":
-            return mark_task()
+        retry = input("You want to try another task: 'Y' to retry, any else character to return to menu:")
+        if retry.lower() == 'y':
+            mark_task()
 
 def main():
     while True:
