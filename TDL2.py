@@ -34,15 +34,19 @@ def add_task(task):
                 print("Not valid priority, please try again.")
 
         f = "%Y-%m-%d"  #Date format
-        while True: #Determine if the priority is acceptable
+        while True: #Determine if the date is acceptable
             day = input("Enter the deadline (YYYY-MM-DD):")
             try:
-                datetime.strptime(day,f)
-                break
+                v = datetime.strptime(day,f)
+                if v < datetime.today(): #Check if the date is not prior of the entry date
+                    print("Invalid date entered. Please try again.")
+                    continue
+                else:
+                    break
             except ValueError:
                 print("Invalid date entered. Please try again.")
         new_task = [task,p,day]
-        task_l.append(new_task)  #Append the new task as a list
+        task_l.append(new_task)  #Append new task as a list, creating nested list
         changes_unsaved = True   # flag to indicate changes
         print(f"'{task}' has been added to list.\n")
 
