@@ -1,4 +1,6 @@
-correr (completed)
-ir
+ir (completed)
 caminar
 pelis (completed)
+ir a la playa
+comer
+ir helado

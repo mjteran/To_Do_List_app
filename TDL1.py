@@ -14,11 +14,18 @@
 # global variables:
 task_l = []
 changes_unsaved = False
+
 # functions:
 # function to add tasks to the list:
+def task_exists(task):
+    for existing_task in task_l:                        # verify tasks in task list
+        if existing_task.lower().replace(" (completed)", "") == task.lower():   # verify the original task
+            return existing_task                        # return the matching task
+    return None                                         # return None if no matching task is found
+
 def add_task(task):
     global changes_unsaved
-    if task in task_l:                                  # validate if task already exists
+    if task_exists(task):                               # validate if task already exists
         print(f"'{task}' is already in the list. Duplicate tasks are not allowed.\n")
     else:
         task_l.append(task)                             # append task to the list
@@ -47,8 +54,9 @@ def remove_task():
         print("Invalid input. Task cannot be empty.\n")
         return
 
-    if task in task_l:                                  # to remove task
-        task_l.remove(task)
+    existing_task = task_exists(task)                   # check if the task exists
+    if existing_task:                                   # if a matching task
+        task_l.remove(existing_task)                    # remove the task
         changes_unsaved = True                          # flag to indicate changes
         print(f"'{task}' has been removed from the list.\n")
     else:                                               # if task is not in the list
@@ -60,7 +68,7 @@ def remove_task():
 # function to save the task list to a file
 def save_tasks(filename='tasks.txt'):
     global changes_unsaved
-    if not task_l:  # if list of tasks is empty
+    if not task_l:                                      # if list of tasks is empty
         print("The To-do List is empty. No file saved.\n")
         return
     with open(filename, 'w') as file:                   # open file tasks.txt
@@ -76,7 +84,7 @@ def load_tasks(filename='tasks.txt'):                   # load the tasks file
         with open(filename, 'r') as file:               # read the tasks
             for line in file:
                 task = line.strip()
-                if task and task not in task_l:  # avoid duplicates
+                if task and task not in task_l:         # avoid duplicates
                     task_l.append(task)                 # to avoid duplicates
                     new_task += 1                       # count new tasks
         if new_task > 0:
@@ -89,19 +97,22 @@ def load_tasks(filename='tasks.txt'):                   # load the tasks file
 
 # function to mark a task as completed
 def mark_task():
-    if not task_l:
+    if not task_l:                                                      # task list empty
         print("The To-do List is empty.\n")
         return
-    task_c = input("Enter the completed task: ").strip()
-    if task_c in task_l:
-        i = task_l.index(f"{task_c}")
-        task_l[i] = f"{task_c} (completed)"
-        print(f"'{task_c}' has been marked as completed.\n")
+    task_c = input("Enter the completed task: ").strip().lower()
+    existing_task = task_exists(task_c)                                 # validate if task already exists
+    if existing_task:
+        if "(completed)" not in existing_task:                          # mark the task as completed
+            task_l[task_l.index(existing_task)] += " (completed)"
+            print(f"'{task_c}' has been marked as completed.\n")
+        else:                                                           # task already marked as completed
+            print(f"'{task_c}' is already marked as completed.\n")
     else:
-        print("The task is not in the list.")
+        print(f"The task '{task_c}' is not in the list.")               # task not found in the list
         retry = input("Would you like to try again? ('Y' to retry, any other character to return to the menu): ")
         if retry.lower() == 'y':
-            return mark_task()
+            mark_task()
 
 def main():
     while True:
@@ -117,9 +128,9 @@ def main():
         # validate options
         if request == "1":
             task = input("Enter the task to add: ").strip() # remove extra spaces in the task
-            if task:                        # check if the input is not empty
+            if task:                                        # check if the input is not empty
                 add_task(task)
-            else:                           # validate if new task is empty
+            else:                                           # validate if new task is empty
                 print("Invalid input. Task cannot be empty.\n")
         elif request == "2":
             remove_task()
@@ -135,12 +146,12 @@ def main():
             if changes_unsaved:
                 save_user = input("You have unsaved changes. Would you like to save before exiting? (Y/N): ").strip().lower()
                 if save_user == 'y':
-                    save_tasks()            # save changes if user chooses
+                    save_tasks()                        # save changes if user chooses
                 elif save_user != 'n':
                     print("Invalid choice. Exiting without saving.")
             print("Exiting the application. Goodbye!")
             break
-        else:                               # validate wrong inputs
+        else:                                           # validate wrong inputs
             print("Invalid choice. Please try again.\n")
 
 # call the main menu
