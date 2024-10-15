@@ -16,22 +16,22 @@ from datetime import datetime
 import pandas as pd
 
 # global variables:
-task_l = pd.DataFrame(columns=['Task','Priority', 'Date', 'Priority_Value'])
+task_l = []
+task_df = pd.DataFrame(columns=['Task','Priority', 'Date', 'Priority_Value',"Complete"])
 changes_unsaved = False
-
 # priorities:
 p_value = {'high': 1, 'medium': 2, 'low': 3}
-
+print(datetime.today())
 # functions:
 # function to add tasks to the list:
 def add_task(task):
-    global changes_unsaved, p_value
-    if task in task_l['Task'].values:                           # validate if task already exists
+    global changes_unsaved, p_value, task_df
+    if task in task_df['Task'].values:                           # validate if task already exists
         print(f"'{task}' is already in the list. Duplicate tasks are not allowed.\n")
-
+        return
     allow = ["high", "medium", "low"]
     while True:                                                 # determine if the priority is acceptable
-        p = input("Enter the priority (high,medium,low):").strip()
+        p = input("Enter the priority (high,medium,low):").strip().lower()
         if p in allow:
             break
         else:
@@ -41,37 +41,39 @@ def add_task(task):
     while True:                                                 # determine if the date is acceptable
         day = input("Enter the deadline (YYYY-MM-DD):")
         try:
-            v = datetime.strptime(day,f)
-            if v < datetime.today():  # Check if the date is not prior of the entry date
-                print("Invalid date entered. Please try again.")
+            v = datetime.date(datetime.strptime(day,f))
+            if v < datetime.date(datetime.today()):  # Check if the date is not prior of the entry date
+                print(v)
+                print("Invalid date entered. Deadline can't be in the past. Please try again.")
                 continue
             else:
                 break
         except ValueError:
             print("Invalid date entered. Please try again.")
     # add new task as a row
-    new_task = [task,p,day,p_value[p]]
-    task_l.loc[len(task_l)] = new_task                          # append the new task as a row
+    new_task = {'Task':task,'Priority':p, 'Date':v, 'Priority_Value':p_value[p], 'Complete': "No"}
+    task_l.append(new_task)
+    task_df.loc[len(task_df)] = new_task  # append the new task as a row
+    print(task_df)
     changes_unsaved = True                                      # flag to indicate changes
     print(f"'{task}' has been added to list.\n")
 
 def view_task():
-    if task_l.empty:                                            # if the list of tasks is empty
+    if task_df.empty:                                            # if the list of tasks is empty
         print("The To-do List is empty.\n")
         return
 
-    task_l['Date'] = pd.to_datetime(task_l['Date'])             # 'Date' to datetime for sorting
+    task_df['Date'] = pd.to_datetime(task_df['Date'])             # 'Date' to datetime for sorting
     # first sort by Date
-    task_l.sort_values(by=['Date'], ascending=True, inplace=True)           # sort 'Date' in ascending order
+    task_df.sort_values(by=['Date'], ascending=True, inplace=True)           # sort 'Date' in ascending order
     # second sort by Priority
-    task_l['Priority_V'] = task_l['Priority'].map(p_value)      # create a column with priorities
-    task_sorted = task_l.sort_values(by=['Priority_V'])         # sort by Priority values
-    print(task_sorted)
+    task_sorted = task_df.sort_values(by=['Priority_Value'])         # sort by Priority values
+    print(task_sorted[["Task",'Priority',"Date","Complete"]])
 
 # function to remove a task:
 def remove_task():
     global changes_unsaved
-    if not task_l:                                      # if list of tasks is empty and nothing to remove
+    if task_df.empty:                                      # if list of tasks is empty and nothing to remove
         print("The To-do List is empty.\n")
         return
 
@@ -80,8 +82,8 @@ def remove_task():
         print("Invalid input. Task cannot be empty.\n")
         return
 
-    if task in task_l:                                  # to remove task
-        task_l.remove(task)
+    if task in task_df["Task"].values:                                  # to remove task
+        task_df.drop(task_df[task_df["Task"]==task].index,inplace=True)   #Remove the entire row that match with the task condition
         changes_unsaved = True                          # flag to indicate changes
         print(f"'{task}' has been removed from the list.\n")
     else:                                               # if task is not in the list
@@ -111,8 +113,8 @@ def load_tasks(filename='tasks.txt'):                   # load the tasks file
                 task = line.strip().strip('[]').split(",") # split by comma
                 if len(task) == 3:                      # 3 columns
                     task, priority, date = task
-                    if task and task not in task_l['Task'].values:  # avoid duplicates
-                        task_l.loc[len(task_l)] = [task.strip(), priority.strip(), date.strip(), p_value[priority.strip()]]  # append as list
+                    if task and task not in task_df['Task'].values:  # avoid duplicates
+                        task_df.loc[len(task_l)] = [task.strip(), priority.strip(), date.strip(), p_value[priority.strip()]]  # append as list
                         new_task += 1                   # count new tasks
 
         if new_task > 0:
@@ -129,9 +131,8 @@ def mark_task():
         print("The To-do List is empty.")
         return
     v = input("Enter the complete task:").strip()
-    if v in task_l:
-        c = task_l.index(f"{v}")
-        task_l[c] = f"{v} (completed)"
+    if v in task_df["Task"].values:
+        task_df.loc[task_df["Task"] == v,"Complete"] = "Yes"
         print(f"{v} has been marked complete.")
     else:
         print("The task is not in the list")
