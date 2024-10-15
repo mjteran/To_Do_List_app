@@ -1,6 +1,18 @@
-ir (completed)
-caminar
-pelis (completed)
-ir a la playa
-comer
-ir helado
+[ir a la playa, low, 2024-10-12]
+
+
+
+
+
+
+
+
+
+
+
+[cantar, medium, 2025-01-01]
+
+
+
+[bailar, high, 2024-10-15]
+[comer, high, 2024-10-16]
