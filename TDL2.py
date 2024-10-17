@@ -51,7 +51,7 @@ def add_task(task):
         except ValueError:
             print("Invalid date entered. Please try again.")
     # add new task as a row
-    new_task = [task.strip(), priority, date, p_value[priority], "No"]
+    new_task = [task.strip(), priority, pd.to_datetime(date), p_value[priority], "No"]
     task_df.loc[len(task_df)] = new_task        # append the new task as an extra row in dataframe
     changes_unsaved = True                      # flag to indicate changes
     print(f"'{task}' has been added to list.\n")
