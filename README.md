@@ -14,7 +14,7 @@ This project helps the user to manage task in an efficient way. This application
 ## How to use it
 
 1. Clone the repository:
-    git clone https://github.com/mjteran/MiniProject_TDL_G7.git
+    git clone [https://github.com/mjteran/MiniProject_TDL_G7.git](https://github.com/mjteran/To_Do_List_app.git)
 2. Go to the project directory and open either of the two files TDL1.py or TDL2.py (Be sure you have installed a pyton interpreter). We suggest to use TDL2.py for a better experience.
 3. Make sure you have installed the next package: "pandas"
 4. Run the program.
